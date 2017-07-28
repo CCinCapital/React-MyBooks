@@ -6,17 +6,19 @@ import ListMyReads from './ListMyReads'
 import SearchForBooks from './SearchForBooks'
 
 class BooksApp extends Component {
+	
+	bookShelf = [{
+					name: 'Currently Reading',
+					indicator: 'currentlyReading'
+				},{
+					name: 'Want to Read',
+					indicator: 'wantToRead'
+				},{
+					name: 'Read',
+					indicator: 'read'
+				}]
+
 	state = {
-		bookShelf:  [{
-			name: 'Currently Reading',
-			indicator: 'currentlyReading'
-		},{
-			name: 'Want to Read',
-			indicator: 'wantToRead'
-		},{
-			name: 'Read',
-			indicator: 'read'
-		}],
 		books: []
 	}
 
@@ -31,9 +33,9 @@ class BooksApp extends Component {
 			<div className="app">
 				<Route exact path="/" render={() => (
 					<ListMyReads
-					bookShelf={this.state.bookShelf}
-					books={this.state.books}
-					/>
+						bookShelf={this.bookShelf}
+						books={this.state.books}
+					></ListMyReads>
 				)}/>
 				<Route exact path="/search" render={({ history }) => (
 					<SearchForBooks/>
