@@ -1,43 +1,50 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import Book from './Book'
 
 class BookShelf extends Component {
 	static propTypes = {
-		bookShelf: PropTypes.object.isRequired
+		bookShelf: PropTypes.string.isRequired
 	}
 
 	constructor() {
 		super()
 		this.state = {
-			bookShelf: []
+			bookShelf: [],
+			books: []
 		}
 	}
 
 	componentDidMount() {
-		this.setState({ bookShelf: this.props.bookShelf })
+		this.setState({ bookShelf: this.props.bookShelf,
+						books: this.props.books })
 	}
-
-	loadBookShelf(bookShelf) {
-		return(
-			<div key={ bookShelf.indicator } className="bookshelf">
-				<h2 className="bookshelf-title">{ bookShelf.name }</h2>
-				<div className="bookshelf-books">
-					<ol className="books-grid">
-						{this.props.children}
-					</ol>
-				</div>
-			</div>	
-		)	
+	
+	componentWillReceiveProps(nextProps) {
+		this.setState({ books: nextProps.books })	
 	}
 
 	render() {
 		try {
 			return (
-				this.loadBookShelf(this.state.bookShelf)
-			)	
+				<div key={ this.state.bookShelf.indicator } className="bookshelf">
+					<h2 className="bookshelf-title">{ this.state.bookShelf }</h2>
+					<div className="bookshelf-books">
+						<ol className="books-grid">
+							{this.state.books.map((book)=>
+								<Book
+									key={book.industryIdentifiers[0].identifier}
+									book={book}
+									bookShelf={this.state.bookShelf}
+								></Book>
+							)}
+						</ol>
+					</div>
+				</div>	
+			)		
 		} catch (e) {
 			return (
-				<p>No Book Shelf was found.</p>
+				<p>No Result was found.</p>
 			)
 		}
 	}

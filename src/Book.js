@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import * as BooksAPI from './BooksAPI'
+import DropDownMenu from './DropDownMenu'
+
 
 class Book extends Component {
 	static propTypes = {
@@ -12,15 +14,24 @@ class Book extends Component {
 		this.state = {
 			book: [],
 			bookShelf: [],
-			toShelf: undefined
+			toShelf: undefined,
 		}
-		this.changeShelf = this.changeShelf.bind(this)
 	}
 
-	componentDidMount(prevProps, prevState) {
+	componentDidMount() {
 		this.setState({ book: this.props.book,
 						bookShelf: this.props.bookShelf 
 					})		
+	}
+
+	componentDidUpdate(prevProps, prevState) {
+		if (this.state.toShelf !== undefined && this.state.toShelf !== prevState.toShelf) {
+			BooksAPI.update(this.state.book, this.state.toShelf)
+		}
+	}
+
+	callBack = (childrenData) => {
+		this.setState({ toShelf: childrenData })
 	}
 
 	loadThumbnail(book) {
@@ -41,45 +52,31 @@ class Book extends Component {
 		}
 	}
 
-	changeShelf(shelf){
-		this.setState({ toShelf : shelf.target.value })
-		BooksAPI.update(this.state.book, this.state.toShelf)
-	}
-
-	loadBook(book) {
-		let thumbnail=this.loadThumbnail(book)
-		let authors=this.loadAuthors(book)
-
-		return (
-			<li key={book.industryIdentifiers[0].identifier}>
-				<div className="book">
-					<div className="book-top">
-						<div className="book-cover" style={{ width: 128, height: 193, backgroundImage: 'url("'+thumbnail+'")' }}></div>
-						<div className="book-shelf-changer">
-							<select value={this.state.toShelf} onChange={this.changeShelf}>
-								<option value="none" disabled>Move to...</option>
-								<option value="currentlyReading">Currently Reading</option>
-								<option value="wantToRead">Want to Read</option>
-								<option value="read">Read</option>
-								<option value="none">None</option>
-							</select>
-						</div>
-					</div>
-					<div className="book-title">{book.title}</div>
-					<div className="book-authors">{authors}</div>
-				</div>
-			</li>			
-		)
-	}
-
 	render() {
 		try {
 			return (
-				this.loadBook(this.state.book)
+				<li>
+					<div className="book">
+						<div className="book-top">
+							<div className="book-cover" style={{ width: 128, height: 193, backgroundImage: 'url("'+this.loadThumbnail(this.state.book)+'")' }}></div>
+							<div className="book-shelf-changer">
+								<DropDownMenu callBackFromParent={this.callBack}>
+									<option value="none" disabled>Move to...</option>
+									<option value="currentlyReading">Currently Reading</option>
+									<option value="wantToRead">Want to Read</option>
+									<option value="read">Read</option>
+									<option value="none">None</option>
+								</DropDownMenu>
+							</div>
+						</div>
+						<div className="book-title">{this.state.book.title}</div>
+						<div className="book-authors">{this.loadAuthors(this.state.book)}</div>
+					</div>
+				</li>			
 			)
 		} catch (e) {
 			return (
-				<p>No Results Found.</p>
+				<div>No Results Found.</div>
 			)
 		}
 	}

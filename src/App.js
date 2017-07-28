@@ -28,6 +28,12 @@ class BooksApp extends Component {
 		})
 	}
 
+	// REMOVE BEFORE DELIVER
+	// componentDidUpdate(prevProps, prevState) {
+	// 	console.log('APP.js : books :')
+	// 	console.log(this.state.books)
+	// }
+
 	render() {
 		return (
 			<div className="app">

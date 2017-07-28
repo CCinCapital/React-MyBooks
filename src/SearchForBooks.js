@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import * as BooksAPI from './BooksAPI'
-import Book from './Book'
+import BookShelf from './BookShelf'
 
 class SearchForBooks extends Component {
 
@@ -15,29 +15,15 @@ class SearchForBooks extends Component {
 		this.setState({ query: query })
 	}
 
-	handleInput() {
-		this.componentDidUpdate()
-	}
-
-	showSearchResult() {
-		try{
-			return (this.state.books.map((book) => 
-						<Book
-							key={book.industryIdentifiers[0].identifier}
-							book={book}
-						>
-						</Book>
-					))		
-		} catch (e) {
-			return (<p> No Result Found. </p>)
-		}
-	}
-
 	componentDidUpdate(prevProps, prevState) {
-		if (prevState !== undefined && this.state.query !== prevState.query) {
-			BooksAPI.search(this.state.query, this.state.maxResults).then((books) => {
-				this.setState({ books: books })
-				})
+		if (this.state.query !== prevState.query) {
+			if (this.state.query.length === 0) {
+				this.setState({ books: undefined })
+			} else {
+				BooksAPI.search(this.state.query, this.state.maxResults).then((books) => {
+					this.setState({ books: books })
+					})				
+			}
 		}			
 	}
 
@@ -56,14 +42,16 @@ class SearchForBooks extends Component {
 							value={this.state.query}
 							onChange={(event) => {
 								this.updateQuery(event.target.value)
-								this.handleInput()
 							}}
 						/>
 					</div>
 				</div>
 				<div className="search-books-results">
 					<ol className="books-grid">
-						{this.showSearchResult()}
+						<BookShelf
+							bookShelf='Search Results'
+							books={this.state.books}
+						></BookShelf>
 					</ol>
 				</div>
 			</div>
