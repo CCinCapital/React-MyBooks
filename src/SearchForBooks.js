@@ -2,9 +2,13 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import * as BooksAPI from './BooksAPI'
 import BookShelf from './BookShelf'
+import PropTypes from 'prop-types'
 
 class SearchForBooks extends Component {
-	
+	static propTypes = {
+		callBackFromParent: PropTypes.func.isRequired
+	}
+
 	constructor() {
 		super()
 		this.state = {
@@ -40,13 +44,15 @@ class SearchForBooks extends Component {
 
 	callBack = (childrenData) => {
 		if (childrenData.toShelf !== 'none') {
-			this.addBookToShelf(childrenData.book, childrenData.toShelf)
+			this.props.callBackFromParent({
+				book: childrenData.book,
+				fromShelf: this.state.bookShelf.indicator,
+				toShelf: childrenData.toShelf
+			})
 		}
 	}
 
-	addBookToShelf(book, toShelf) {
-		BooksAPI.update(book, toShelf)
-	}
+
 
 	render() {
 		return (

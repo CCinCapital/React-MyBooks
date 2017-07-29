@@ -32,7 +32,6 @@ class BookShelf extends Component {
 	}
 
 	render() {
-		console.log(this.state.bookShelf)
 		try {
 			return (
 				<div key={ this.state.bookShelf.indicator } className="bookshelf">

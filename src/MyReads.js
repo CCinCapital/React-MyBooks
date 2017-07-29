@@ -2,55 +2,53 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import BookShelf from './BookShelf'
 import * as BooksAPI from './BooksAPI'
+import PropTypes from 'prop-types'
 
 class MyReads extends Component {
 
+	static propTypes = {
+		bookShelfs: PropTypes.array.isRequired,
+	}
+
 	constructor() {
 		super()
-		this.state = {			
-			bookShelfs : {
-				0: {
-					name: 'Currently Reading',
-					indicator: 'currentlyReading',
-					books: []
-				},
-				1: {
-					name: 'Want to Read',
-					indicator: 'wantToRead',
-					books: []
-				},
-				2: {
-					name: 'Read',
-					indicator: 'read',
-					books: []
-				}
-			},
-			unSortedBooks: []	
+		this.state = {
+			bookShelfs: []
 		}
 	}
 
+	bookShelfs= []
+
+/* MOUNTING: load order
+These methods are called 
+when an instance of a component is being created and inserted into the DOM:
+	.constructor()
+	.componentWillMount()
+	.render()
+	.componentDidMount()
+*/
+
+/* UPDATING: load order
+An update can be caused by changes to props or state.
+These methods are called when a component is being re-rendered:
+	.componentWillReceiveProps(nextProps)
+	.shouldComponentUpdate(nextProps, nextState)
+	.componentWillUpdate(nextProps, nextState)
+	.render()
+	.componentDidUpdate(prevProps, prevState)
+*/
+
+/* UNMOUNTING: 
+This method is called when a component is being removed from the DOM:
+	.componentWillUnmount()
+*/
 	componentWillMount() {
-		BooksAPI.getAll().then((books) => {
-			this.setState({ unSortedBooks : books })
-		})
+		this.bookShelfs=this.props.bookShelfs
 	}
 
-	shouldComponentUpdate(nextProps, nextState) {
-		if (this.state !== nextState) {
-			this.sortBooks(nextState.unSortedBooks)
-		}
-		return this.state !== nextState
+	componentWillReceiveProps(nextProps) {
+		this.bookShelfs = nextProps.bookShelfs
 	}
-
-	sortBooks(unSortedBooks) {
-		Object.values(this.state.bookShelfs).map((bookShelf, i) => 
-		{
-			let newBookShelfs = this.state.bookShelfs
-			newBookShelfs[i].books = unSortedBooks.filter((book) => book.shelf === bookShelf.indicator)
-			this.setState({ bookShelfs : newBookShelfs })
-			return null
-		})
-	}	
 
 	callBack = (childrenData) => {
 		this.moveBook(childrenData.book, childrenData.fromShelf, childrenData.toShelf)
@@ -67,10 +65,12 @@ class MyReads extends Component {
 			this.removeBookFromShelf(book, fromShelf)
 		}
 		else {
-			// SKIP BooksAPI update
+			// SKIP BooksAPI update and state update
 			return null
 		}
 		BooksAPI.update(book, toShelf)
+		this.setState({ bookShelfs: this.bookShelfs })
+		return null
 	}
 
 	moveBookFromOneShelfToAnother(book, fromShelf, toShelf) {
@@ -79,29 +79,25 @@ class MyReads extends Component {
 	}
 
 	removeBookFromShelf(bookToRemove, fromShelf) {
-		let i
-		let newBookShelfs = this.state.bookShelfs
-		Object.entries(this.state.bookShelfs).map(([key, bookShelf]) => {
-			if (bookShelf.indicator === fromShelf) {
-				i = key
+		this.bookShelfs.map(
+			(bookShelf, key) => {
+				if (bookShelf.indicator === fromShelf) {
+					bookShelf.books = bookShelf.books.filter((book) => book !== bookToRemove)
+				}
+				return bookShelf
 			}
-			return null
-		})
-		newBookShelfs[i].books = Object.values(this.state.bookShelfs).filter((bookShelf) => bookShelf.indicator === fromShelf)[0].books.filter((book) => book !== bookToRemove)
-		this.setState({ bookShelfs : newBookShelfs })
+		)
 	}
 
 	addBookToShelf(book, toShelf) {
-		let i
-		let newBookShelfs = this.state.bookShelfs
-		Object.entries(this.state.bookShelfs).map(([key, bookShelf]) => {
-			if (bookShelf.indicator === toShelf) {
-				i = key
+		this.bookShelfs.map(
+			(bookShelf, key) => {
+				if (bookShelf.indicator === toShelf) {
+					bookShelf.books = bookShelf.books.concat(book)
+				}
+				return bookShelf
 			}
-			return null
-		})
-		newBookShelfs[i].books = Object.values(this.state.bookShelfs).filter((bookShelf) => bookShelf.indicator === toShelf)[0].books.concat(book)
-		this.setState({ bookShelfs : newBookShelfs })
+		)
 	}
 
 	render () {
@@ -117,7 +113,7 @@ class MyReads extends Component {
 	            <div className="list-books-content">
 					<div>
 						{ 	
-						Object.values(this.state.bookShelfs).map((bookShelf) => 
+						this.props.bookShelfs.map((bookShelf) => 
 							<BookShelf
 								key={bookShelf.indicator}
 								bookShelf={bookShelf}
