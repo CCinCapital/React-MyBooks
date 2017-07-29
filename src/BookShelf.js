@@ -4,40 +4,50 @@ import Book from './Book'
 
 class BookShelf extends Component {
 	static propTypes = {
-		bookShelf: PropTypes.string.isRequired
+		bookShelf: PropTypes.object.isRequired,
+		callBackFromParent: PropTypes.func.isRequired
 	}
 
 	constructor() {
 		super()
 		this.state = {
-			bookShelf: [],
-			books: []
+			bookShelf: []
 		}
 	}
 
+	callBack = (childrenData) => {
+		this.props.callBackFromParent({
+			book: childrenData.book,
+			fromShelf: this.state.bookShelf.indicator,
+			toShelf: childrenData.toShelf
+		})
+	}
+
 	componentDidMount() {
-		this.setState({ bookShelf: this.props.bookShelf,
-						books: this.props.books })
+		this.setState({ bookShelf: this.props.bookShelf })
 	}
 	
 	componentWillReceiveProps(nextProps) {
-		this.setState({ books: nextProps.books })	
+		this.setState({ bookShelf: nextProps.bookShelf })
 	}
 
 	render() {
+		console.log(this.state.bookShelf)
 		try {
 			return (
 				<div key={ this.state.bookShelf.indicator } className="bookshelf">
-					<h2 className="bookshelf-title">{ this.state.bookShelf }</h2>
+					<h2 className="bookshelf-title">{ this.state.bookShelf.name }</h2>
 					<div className="bookshelf-books">
 						<ol className="books-grid">
-							{this.state.books.map((book)=>
-								<Book
-									key={book.industryIdentifiers[0].identifier}
-									book={book}
-									bookShelf={this.state.bookShelf}
-								></Book>
-							)}
+							{
+								this.state.bookShelf.books.map((book) =>
+									<Book
+										key={book.industryIdentifiers[0].identifier}
+										book={book}
+										callBackFromParent={this.callBack}
+									></Book>
+								)
+							}
 						</ol>
 					</div>
 				</div>	

@@ -6,26 +6,16 @@ class DropDownMenu extends Component {
 		callBackFromParent: PropTypes.func.isRequired
 	}
 
-	constructor() {
-		super()
-		this.state = {
-			value: 'none'
-		}
-	}
-
-	handleChange = (event) => {
-		this.setState({ value: event.target.value })
-	}
-
-	componentDidUpdate(prevProps, prevState) {
-		if (this.state.value !== prevState.value) {
-			this.props.callBackFromParent(this.state.value)
-		}
+	callBack = (event) => {
+		this.props.callBackFromParent(event.target.value)
 	}
 
 	render() {
 		return (
-			<select value={this.state.value} onChange={this.handleChange}>
+			<select 
+				value='null'
+				onChange={this.callBack}
+			>
 				{this.props.children}
 			</select>
 		)

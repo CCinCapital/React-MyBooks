@@ -4,11 +4,18 @@ import * as BooksAPI from './BooksAPI'
 import BookShelf from './BookShelf'
 
 class SearchForBooks extends Component {
-
-	state = {
-		query: '',
-		books: undefined,
-		maxResults: '5'
+	
+	constructor() {
+		super()
+		this.state = {
+			query: '',
+			maxResults: 5,
+			bookShelf: {
+				name: 'Search Results',
+				indicator: 'searchResults',
+				books: undefined
+			}
+		}
 	}
 
 	updateQuery = (query) => {
@@ -18,13 +25,27 @@ class SearchForBooks extends Component {
 	componentDidUpdate(prevProps, prevState) {
 		if (this.state.query !== prevState.query) {
 			if (this.state.query.length === 0) {
-				this.setState({ books: undefined })
+				let newBookShelf = this.state.bookShelf
+				newBookShelf.books = undefined
+				this.setState({ bookShelfs : newBookShelf })
 			} else {
 				BooksAPI.search(this.state.query, this.state.maxResults).then((books) => {
-					this.setState({ books: books })
-					})				
+					let newBookShelf = this.state.bookShelf
+					newBookShelf.books = books
+					this.setState({ bookShelfs : newBookShelf })
+				})				
 			}
 		}			
+	}
+
+	callBack = (childrenData) => {
+		if (childrenData.toShelf !== 'none') {
+			this.addBookToShelf(childrenData.book, childrenData.toShelf)
+		}
+	}
+
+	addBookToShelf(book, toShelf) {
+		BooksAPI.update(book, toShelf)
 	}
 
 	render() {
@@ -49,8 +70,9 @@ class SearchForBooks extends Component {
 				<div className="search-books-results">
 					<ol className="books-grid">
 						<BookShelf
-							bookShelf='Search Results'
-							books={this.state.books}
+							key={this.state.bookShelf.indicator}
+							bookShelf={this.state.bookShelf}
+							callBackFromParent={this.callBack}
 						></BookShelf>
 					</ol>
 				</div>

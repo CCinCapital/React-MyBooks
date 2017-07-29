@@ -1,37 +1,29 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import * as BooksAPI from './BooksAPI'
 import DropDownMenu from './DropDownMenu'
-
 
 class Book extends Component {
 	static propTypes = {
-		book: PropTypes.object.isRequired
+		book: PropTypes.object.isRequired,
+		callBackFromParent: PropTypes.func.isRequired
 	}
 
 	constructor() {
 		super()
 		this.state = {
-			book: [],
-			bookShelf: [],
-			toShelf: undefined,
+			book: []
 		}
 	}
 
 	componentDidMount() {
-		this.setState({ book: this.props.book,
-						bookShelf: this.props.bookShelf 
-					})		
-	}
-
-	componentDidUpdate(prevProps, prevState) {
-		if (this.state.toShelf !== undefined && this.state.toShelf !== prevState.toShelf) {
-			BooksAPI.update(this.state.book, this.state.toShelf)
-		}
+		this.setState({ book: this.props.book })	
 	}
 
 	callBack = (childrenData) => {
-		this.setState({ toShelf: childrenData })
+		this.props.callBackFromParent({
+			book: this.state.book,
+			toShelf: childrenData
+		})
 	}
 
 	loadThumbnail(book) {
@@ -60,7 +52,9 @@ class Book extends Component {
 						<div className="book-top">
 							<div className="book-cover" style={{ width: 128, height: 193, backgroundImage: 'url("'+this.loadThumbnail(this.state.book)+'")' }}></div>
 							<div className="book-shelf-changer">
-								<DropDownMenu callBackFromParent={this.callBack}>
+								<DropDownMenu 
+									callBackFromParent={this.callBack}
+								>
 									<option value="none" disabled>Move to...</option>
 									<option value="currentlyReading">Currently Reading</option>
 									<option value="wantToRead">Want to Read</option>
