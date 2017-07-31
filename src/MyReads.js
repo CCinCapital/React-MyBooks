@@ -19,37 +19,6 @@ class MyReads extends Component {
 
 	bookShelfs= []
 
-/* MOUNTING: load order
-These methods are called 
-when an instance of a component is being created and inserted into the DOM:
-	.constructor()
-	.componentWillMount()
-	.render()
-	.componentDidMount()
-*/
-
-/* UPDATING: load order
-An update can be caused by changes to props or state.
-These methods are called when a component is being re-rendered:
-	.componentWillReceiveProps(nextProps)
-	.shouldComponentUpdate(nextProps, nextState)
-	.componentWillUpdate(nextProps, nextState)
-	.render()
-	.componentDidUpdate(prevProps, prevState)
-*/
-
-/* UNMOUNTING: 
-This method is called when a component is being removed from the DOM:
-	.componentWillUnmount()
-*/
-	componentWillMount() {
-		this.bookShelfs=this.props.bookShelfs
-	}
-
-	componentWillReceiveProps(nextProps) {
-		this.bookShelfs = nextProps.bookShelfs
-	}
-
 	callBack = (childrenData) => {
 		this.moveBook(childrenData.book, childrenData.fromShelf, childrenData.toShelf)
 	}
@@ -98,6 +67,14 @@ This method is called when a component is being removed from the DOM:
 				return bookShelf
 			}
 		)
+	}
+
+	componentWillMount() {
+		this.bookShelfs=this.props.bookShelfs
+	}
+
+	componentWillReceiveProps(nextProps) {
+		this.bookShelfs = nextProps.bookShelfs
 	}
 
 	render () {

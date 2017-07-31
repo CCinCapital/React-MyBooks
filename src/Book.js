@@ -15,10 +15,6 @@ class Book extends Component {
 		}
 	}
 
-	componentDidMount() {
-		this.setState({ book: this.props.book })	
-	}
-
 	callBack = (childrenData) => {
 		this.props.callBackFromParent({
 			book: this.state.book,
@@ -42,6 +38,10 @@ class Book extends Component {
 		} else {
 			return 'undefined'
 		}
+	}
+
+	componentDidMount() {
+		this.setState({ book: this.props.book })	
 	}
 
 	render() {

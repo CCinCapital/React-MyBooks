@@ -26,6 +26,17 @@ class SearchForBooks extends Component {
 		this.setState({ query: query })
 	}
 
+	callBack = (childrenData) => {
+		if (childrenData.toShelf !== 'none') {
+			BooksAPI.update(childrenData.book, childrenData.toShelf)
+			this.props.callBackFromParent({
+				book: childrenData.book,
+				fromShelf: this.state.bookShelf.indicator,
+				toShelf: childrenData.toShelf
+			})
+		}
+	}
+
 	componentDidUpdate(prevProps, prevState) {
 		if (this.state.query !== prevState.query) {
 			if (this.state.query.length === 0) {
@@ -41,18 +52,6 @@ class SearchForBooks extends Component {
 			}
 		}			
 	}
-
-	callBack = (childrenData) => {
-		if (childrenData.toShelf !== 'none') {
-			this.props.callBackFromParent({
-				book: childrenData.book,
-				fromShelf: this.state.bookShelf.indicator,
-				toShelf: childrenData.toShelf
-			})
-		}
-	}
-
-
 
 	render() {
 		return (

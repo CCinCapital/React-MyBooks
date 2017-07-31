@@ -32,14 +32,11 @@ class BooksApp extends Component {
 		}
 	]
 
-	componentWillMount() {
-		this.setState({ bookShelfs: this.bookShelfs })
-	}
-
-	componentWillUpdate(nextProps, nextState) {
-		this.sortBooks(nextState.unSortedBooks)
-	}
-
+	/**
+	* @description Fetch data from server accordingly
+	* @param {string} arg
+	* @returns Nothing
+	*/
 	fetchDataFromServer(arg) {
 		if (arg === 'getAll') {
 			BooksAPI.getAll().then((books) => {
@@ -48,6 +45,11 @@ class BooksApp extends Component {
 		}
 	}
 
+	/**
+	* @description Sort unSortedBooks into bookShelfs
+	* @param {array} unSortedBooks
+	* @returns Nothing
+	*/
 	sortBooks(unSortedBooks) {
 		this.bookShelfs.map(
 			(bookShelf, i) => {
@@ -57,17 +59,24 @@ class BooksApp extends Component {
 				return bookShelf
 			}
 		)
-	}	
+	}
 
 	callBack = (childrenData) => {
-		BooksAPI.update(childrenData.book, childrenData.toShelf)
 		this.fetchDataFromServer('getAll')
+	}
+
+	componentWillMount() {
+		this.setState({ bookShelfs: this.bookShelfs })
+	}
+
+	componentWillUpdate(nextProps, nextState) {
+		this.sortBooks(nextState.unSortedBooks)
 	}
 
 	render() {
 		return (
 			<div className="app">
-				<Route exact path="/" render={() => (
+				<Route exact path="/" render={({ history }) => (
 					<MyReads
 						bookShelfs={this.state.bookShelfs}
 					></MyReads>
