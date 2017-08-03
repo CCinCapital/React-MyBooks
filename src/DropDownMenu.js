@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 
 class DropDownMenu extends Component {
 	static propTypes = {
+		options: PropTypes.array.isRequired,
 		callBackFromParent: PropTypes.func.isRequired
 	}
 
@@ -13,10 +14,20 @@ class DropDownMenu extends Component {
 	render() {
 		return (
 			<select 
-				value='null'
 				onChange={this.callBack}
+				value={this.props.selected}
 			>
-				{this.props.children}
+				{
+					this.props.options.map((option, key) => 
+						<option 
+							key={key} 
+							value={option.value}
+							disabled={option.disabled}
+						>
+							{option.text}
+						</option>
+					)
+				}
 			</select>
 		)
 	}

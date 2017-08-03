@@ -5,57 +5,61 @@ import Book from './Book'
 class BookShelf extends Component {
 	static propTypes = {
 		bookShelf: PropTypes.object.isRequired,
+		unSortedBooks: PropTypes.array.isRequired,
+		bookDropDownMenu: PropTypes.array.isRequired,
 		callBackFromParent: PropTypes.func.isRequired
-	}
-
-	constructor() {
-		super()
-		this.state = {
-			bookShelf: []
-		}
 	}
 
 	callBack = (childrenData) => {
 		this.props.callBackFromParent({
 			book: childrenData.book,
-			fromShelf: this.state.bookShelf.indicator,
+			fromShelf: this.props.bookShelf.value,
 			toShelf: childrenData.toShelf
 		})
 	}
 
-	componentDidMount() {
-		this.setState({ bookShelf: this.props.bookShelf })
+	shouldComponentUpdate(nextProps, nextState){
+		return this.props !== nextProps
 	}
-	
-	componentWillReceiveProps(nextProps) {
-		this.setState({ bookShelf: nextProps.bookShelf })
+
+	displayBooks() {
+		if(this.props.bookShelf.value === 'none') {
+			return this.props.unSortedBooks.map((book) =>
+				<Book
+					key={book.id}
+					book={book}
+					options={this.props.bookDropDownMenu}
+					callBackFromParent={this.callBack}
+				></Book>
+			)
+		} 
+		else {
+			return this.props.unSortedBooks.filter((book) => 
+				book.shelf === this.props.bookShelf.value 
+			).map((book) =>
+				<Book
+					key={book.id}
+					book={book}
+					options={this.props.bookDropDownMenu}
+					callBackFromParent={this.callBack}
+				></Book>
+			)
+		}	
 	}
 
 	render() {
-		try {
-			return (
-				<div key={ this.state.bookShelf.indicator } className="bookshelf">
-					<h2 className="bookshelf-title">{ this.state.bookShelf.name }</h2>
-					<div className="bookshelf-books">
-						<ol className="books-grid">
-							{
-								this.state.bookShelf.books.map((book) =>
-									<Book
-										key={book.industryIdentifiers[0].identifier}
-										book={book}
-										callBackFromParent={this.callBack}
-									></Book>
-								)
-							}
-						</ol>
-					</div>
-				</div>	
-			)		
-		} catch (e) {
-			return (
-				<p>No Result was found.</p>
-			)
-		}
+		return (
+			<div key={ this.props.bookShelf.value } className="bookshelf">
+				<h2 className="bookshelf-title">{ this.props.bookShelf.name }</h2>
+				<div className="bookshelf-books">
+					<ol className="books-grid">
+						{
+							this.displayBooks()
+						}
+					</ol>
+				</div>
+			</div>	
+		)		
 	}
 }
 

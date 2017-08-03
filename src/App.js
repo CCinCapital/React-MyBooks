@@ -10,8 +10,7 @@ class BooksApp extends Component {
 	constructor() {
 		super()
 		this.state = {			
-			unSortedBooks: [],	
-			bookShelfs: []
+			unSortedBooks: []
 		}
 		this.fetchDataFromServer('getAll')
 	}
@@ -19,16 +18,37 @@ class BooksApp extends Component {
 	bookShelfs = [
 		{
 			name: 'Currently Reading',
-			indicator: 'currentlyReading',
-			books: []
+			value: 'currentlyReading',
 		},{
 			name: 'Want to Read',
-			indicator: 'wantToRead',
-			books: []
+			value: 'wantToRead',
 		},{
 			name: 'Read',
-			indicator: 'read',
-			books: []
+			value: 'read',
+		}
+	]
+
+	bookDropDownMenu = [
+		{
+			value: 'None',
+			text: 'Move to...',
+			disabled: 'disabled'
+		},{
+			value: 'currentlyReading',
+			text: 'Currently Reading',
+			disabled: ''
+		},{
+			value: 'wantToRead',
+			text: 'Want to Read',
+			disabled: ''
+		},{
+			value: 'read',
+			text: 'Read',
+			disabled: ''
+		},{
+			value: 'none',
+			text: 'None',
+			disabled: ''
 		}
 	]
 
@@ -45,32 +65,29 @@ class BooksApp extends Component {
 		}
 	}
 
-	/**
-	* @description Sort unSortedBooks into bookShelfs
-	* @param {array} unSortedBooks
-	* @returns Nothing
-	*/
-	sortBooks(unSortedBooks) {
-		this.bookShelfs.map(
-			(bookShelf, i) => {
-				this.bookShelfs[i].books = unSortedBooks.filter(
-					(book) => book.shelf === bookShelf.indicator
-				)
-				return bookShelf
-			}
-		)
+	moveBook(book, toShelf) {
+		if(book.shelf !== toShelf) {
+			BooksAPI.update(book, toShelf).then(() => {
+				if(toShelf !== 'none') {
+					book.shelf = toShelf
+					// Filter out the book and append it to the end of the list
+					// so it appears at the end of whatever shelf it was added to.
+					this.setState(state => ({
+						unSortedBooks: state.unSortedBooks.filter((b) => b.id !== book.id).concat([ book ])
+					}))					
+				}
+				else {
+					// Filter out the book
+					this.setState(state => ({
+						unSortedBooks: state.unSortedBooks.filter((b) => b.id !== book.id)
+					}))	
+				}
+			})
+		}
 	}
 
 	callBack = (childrenData) => {
-		this.fetchDataFromServer('getAll')
-	}
-
-	componentWillMount() {
-		this.setState({ bookShelfs: this.bookShelfs })
-	}
-
-	componentWillUpdate(nextProps, nextState) {
-		this.sortBooks(nextState.unSortedBooks)
+		this.moveBook(childrenData.book, childrenData.toShelf)
 	}
 
 	render() {
@@ -78,11 +95,16 @@ class BooksApp extends Component {
 			<div className="app">
 				<Route exact path="/" render={({ history }) => (
 					<MyReads
-						bookShelfs={this.state.bookShelfs}
+						unSortedBooks={this.state.unSortedBooks}
+						bookShelfs={this.bookShelfs}
+						bookDropDownMenu={this.bookDropDownMenu}
+						callBackFromParent={this.callBack}
 					></MyReads>
 				)}/>
 				<Route exact path="/search" render={({ history }) => (
 					<SearchForBooks
+						unSortedBooks={this.state.unSortedBooks}
+						bookDropDownMenu={this.bookDropDownMenu}
 						callBackFromParent={this.callBack}
 					></SearchForBooks>
 				)}/>

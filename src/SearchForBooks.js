@@ -6,6 +6,8 @@ import PropTypes from 'prop-types'
 
 class SearchForBooks extends Component {
 	static propTypes = {
+		unSortedBooks: PropTypes.array.isRequired,
+		bookDropDownMenu: PropTypes.array.isRequired,
 		callBackFromParent: PropTypes.func.isRequired
 	}
 
@@ -14,12 +16,12 @@ class SearchForBooks extends Component {
 		this.state = {
 			query: '',
 			maxResults: 5,
-			bookShelf: {
-				name: 'Search Results',
-				indicator: 'searchResults',
-				books: undefined
-			}
+			unSortedBooks: []
 		}
+	}
+	
+	bookShelf= {
+		value: 'none'
 	}
 
 	updateQuery = (query) => {
@@ -27,28 +29,34 @@ class SearchForBooks extends Component {
 	}
 
 	callBack = (childrenData) => {
-		if (childrenData.toShelf !== 'none') {
-			BooksAPI.update(childrenData.book, childrenData.toShelf)
-			this.props.callBackFromParent({
-				book: childrenData.book,
-				fromShelf: this.state.bookShelf.indicator,
-				toShelf: childrenData.toShelf
-			})
-		}
+		this.props.callBackFromParent({
+			book: childrenData.book,
+			fromShelf: childrenData.fromShelf,
+			toShelf: childrenData.toShelf
+		})
 	}
 
 	componentDidUpdate(prevProps, prevState) {
 		if (this.state.query !== prevState.query) {
 			if (this.state.query.length === 0) {
-				let newBookShelf = this.state.bookShelf
-				newBookShelf.books = undefined
-				this.setState({ bookShelfs : newBookShelf })
+				this.setState({ unSortedBooks : [] })
 			} else {
 				BooksAPI.search(this.state.query, this.state.maxResults).then((books) => {
-					let newBookShelf = this.state.bookShelf
-					newBookShelf.books = books
-					this.setState({ bookShelfs : newBookShelf })
-				})				
+					if(books.length !== undefined) {
+						books.map((book) => {
+							let b = this.props.unSortedBooks.filter((b) => b.id === book.id)
+							if(b.length !== 0){
+								book.shelf = b.shelf
+							} else {
+								book.shelf = 'None'
+							}
+							return null
+						})
+						this.setState({ unSortedBooks : books })
+					} else {
+						this.setState({ unSortedBooks : [] })
+					} 
+				})
 			}
 		}			
 	}
@@ -75,8 +83,9 @@ class SearchForBooks extends Component {
 				<div className="search-books-results">
 					<ol className="books-grid">
 						<BookShelf
-							key={this.state.bookShelf.indicator}
-							bookShelf={this.state.bookShelf}
+							unSortedBooks={this.state.unSortedBooks}
+							bookShelf={this.bookShelf}
+							bookDropDownMenu={this.props.bookDropDownMenu}
 							callBackFromParent={this.callBack}
 						></BookShelf>
 					</ol>

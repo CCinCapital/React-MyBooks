@@ -5,19 +5,13 @@ import DropDownMenu from './DropDownMenu'
 class Book extends Component {
 	static propTypes = {
 		book: PropTypes.object.isRequired,
+		options: PropTypes.array.isRequired,
 		callBackFromParent: PropTypes.func.isRequired
-	}
-
-	constructor() {
-		super()
-		this.state = {
-			book: []
-		}
 	}
 
 	callBack = (childrenData) => {
 		this.props.callBackFromParent({
-			book: this.state.book,
+			book: this.props.book,
 			toShelf: childrenData
 		})
 	}
@@ -40,8 +34,8 @@ class Book extends Component {
 		}
 	}
 
-	componentDidMount() {
-		this.setState({ book: this.props.book })	
+	shouldComponentUpdate(nextProps, nextState){
+		return this.props !== nextProps
 	}
 
 	render() {
@@ -50,21 +44,17 @@ class Book extends Component {
 				<li>
 					<div className="book">
 						<div className="book-top">
-							<div className="book-cover" style={{ width: 128, height: 193, backgroundImage: 'url("'+this.loadThumbnail(this.state.book)+'")' }}></div>
+							<div className="book-cover" style={{ width: 128, height: 193, backgroundImage: 'url("'+this.loadThumbnail(this.props.book)+'")' }}></div>
 							<div className="book-shelf-changer">
 								<DropDownMenu 
 									callBackFromParent={this.callBack}
-								>
-									<option value="none" disabled>Move to...</option>
-									<option value="currentlyReading">Currently Reading</option>
-									<option value="wantToRead">Want to Read</option>
-									<option value="read">Read</option>
-									<option value="none">None</option>
-								</DropDownMenu>
+									selected={this.props.book.shelf}
+									options={this.props.options}
+								></DropDownMenu>
 							</div>
 						</div>
-						<div className="book-title">{this.state.book.title}</div>
-						<div className="book-authors">{this.loadAuthors(this.state.book)}</div>
+						<div className="book-title">{this.props.book.title}</div>
+						<div className="book-authors">{this.loadAuthors(this.props.book)}</div>
 					</div>
 				</li>			
 			)
