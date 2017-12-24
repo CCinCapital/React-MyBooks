@@ -25,14 +25,14 @@ class MyReads extends Component {
 	render () {
 		return (
 			<div className="list-books">
-	            <div className="list-books-title">
+        <div className="list-books-title">
 					<h1>MyReads</h1>
-           			<Link
-           				to="/search"
-           				className="open-search"
-           			></Link>
-	            </div>
-	            <div className="list-books-content">
+     			<Link
+     				to="/React-MyBooks/search"
+     				className="open-search"
+     			></Link>
+        </div>
+        <div className="list-books-content">
 					<div>
 						{ 	
 							this.props.bookShelfs.map((bookShelf) => 
@@ -45,9 +45,9 @@ class MyReads extends Component {
 								></BookShelf>
 							)
 						}
-	            	</div>
-           		</div>
-           	</div>
+        	</div>
+     		</div>
+     	</div>
 		)
 	}
 }
