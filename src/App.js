@@ -93,7 +93,7 @@ class BooksApp extends Component {
 	render() {
 		return (
 			<div className="app">
-				<Route exact path="/" render={({ history }) => (
+				<Route path="/" render={({ history }) => (
 					<MyReads
 						unSortedBooks={this.state.unSortedBooks}
 						bookShelfs={this.bookShelfs}
@@ -101,7 +101,7 @@ class BooksApp extends Component {
 						callBackFromParent={this.callBack}
 					></MyReads>
 				)}/>
-				<Route exact path="/search" render={({ history }) => (
+				<Route path="/search" render={({ history }) => (
 					<SearchForBooks
 						unSortedBooks={this.state.unSortedBooks}
 						bookDropDownMenu={this.bookDropDownMenu}

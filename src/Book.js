@@ -19,7 +19,8 @@ class Book extends Component {
 	loadThumbnail(book) {
 		if (book.hasOwnProperty('imageLinks')) {
 			if (book.imageLinks.hasOwnProperty('thumbnail')) {
-				return (book.imageLinks.thumbnail)
+				let thumbnail = book.imageLinks.thumbnail.replace(/^http:/, "https:")
+				return thumbnail
 			}
 		} else {
 			return 'undefined'
