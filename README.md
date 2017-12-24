@@ -1,4 +1,5 @@
 This is the project One for Udacity's React Fundamentals course. It was built on the starter template developed by [React Training](https://reacttraining.com). The template provided a static example of the CSS and HTML markup that may be used, but without any of the React code. My job was to add interactivity to the app by refactoring the static code in this template.
+[Live Preview](https://ccincapital.github.io/React-MyBooks/)
 
 ## Overview
 <img src="https://d17h27t6h515a5.cloudfront.net/topher/2017/July/595d48a9_correct-use-of-state/correct-use-of-state.gif"></img>
